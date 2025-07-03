@@ -13,13 +13,13 @@ urlpatterns = [
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/register/', RegisterView.as_view(), name='auth_register'),
     path('api/logout/', LogoutView.as_view(), name='logout'),  # Ajout de la route pour la déconnexion
-    
+    path('profile/', ProfileView.as_view(), name='profile'),
     # Categorie
     path('categories/', CategorieListCreateView.as_view()),
     path('categories/<int:pk>/', CategorieRetrieveUpdateDestroyView.as_view()),
 
     # Produit
-    path('produits/', ProduitListCreateView.as_view()),
+    path('toutproduits/', ProduitView.as_view()),
     path('produits/<int:pk>/', ProduitRetrieveUpdateDestroyView.as_view()),
 
     # Commande

@@ -16,18 +16,27 @@ class Utilisateur(AbstractUser):
 class Categorie(models.Model):
     nom = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-
+    image_url = models.FileField(upload_to='pictures/', null=True, blank=True)
     def __str__(self):
         return self.nom
 
 class Produit(models.Model):
     nom = models.CharField(max_length=150)
-    description = models.TextField()
-    prix = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.IntegerField()
-    image_url = models.URLField(blank=True)
+    description = models.TextField(null=True, blank=True)
+    prix = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    stock = models.IntegerField(null=True, blank=True)
+    image_url = models.FileField(upload_to='pictures/', null=True, blank=True)
+    avis= models.IntegerField( null=True, blank=True)
+    
+   
+    date_ajout = models.DateTimeField(auto_now_add=True)
+    couleur = models.CharField(max_length=50, null=True, blank=True)
+    taille = models.CharField(max_length=50, null=True, blank=True)
+    marque = models.CharField(max_length=100, null=True, blank=True)
+    size = models.CharField(max_length=50, null=True, blank=True)
+    forme = models.CharField(max_length=50, null=True, blank=True) 
+    quantite = models.IntegerField(null=True, blank=True)
     categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-
     def __str__(self):
         return self.nom
 

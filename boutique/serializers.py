@@ -18,15 +18,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
-        fields = ['id', 'nom', 'description']
+        fields = '__all__'
 
 class ProduitSerializer(serializers.ModelSerializer):
-    categorie = CategorieSerializer(read_only=True)
-    categorie_id = serializers.PrimaryKeyRelatedField(queryset=Categorie.objects.all(), source='categorie', write_only=True)
+    categorie= serializers.PrimaryKeyRelatedField(queryset=Categorie.objects.all())  # Accepte un ID
 
+    
     class Meta:
         model = Produit
-        fields = ['id', 'nom', 'description', 'prix', 'stock', 'image_url', 'categorie', 'categorie_id']
+        fields = '__all__'
 
 class CommandeProduitSerializer(serializers.ModelSerializer):
     produit = ProduitSerializer(read_only=True)
@@ -34,11 +34,11 @@ class CommandeProduitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CommandeProduit
-        fields = ['id', 'produit', 'produit_id', 'quantite', 'prix_unitaire']
+        fields = '__all__'
 
 class CommandeSerializer(serializers.ModelSerializer):
     produits = CommandeProduitSerializer(many=True, read_only=True)
 
     class Meta:
         model = Commande
-        fields = ['id', 'nom', 'prenom', 'numero_telephone', 'adresse', 'livraison_type', 'date_commande', 'statut', 'produits']
+        fields = '__all__'

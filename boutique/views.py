@@ -77,10 +77,64 @@ class ProduitListCreateView(generics.ListCreateAPIView):
     queryset = Produit.objects.all()
     serializer_class = ProduitSerializer
 
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            return Response({
+                "produits": serializer.data,
+                "total": queryset.count()
+            })
+        except Exception as e:
+            import traceback
+            return Response({
+                "error": str(e),
+                "trace": traceback.format_exc()
+            }, status=500)
 class ProduitRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Produit.objects.all()
     serializer_class = ProduitSerializer
 
+class ProduitView(APIView):
+    permission_classes = []  # Pas de restrictions pour l'instant
+
+    def get(self, request):
+        try:
+            produits = Produit.objects.all()
+            serializer = ProduitSerializer(produits, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            import traceback
+            print("Erreur dans GET ProduitView :", e)
+            print(traceback.format_exc())
+            return Response({"error": str(e), "trace": traceback.format_exc()}, status=500)
+    def post(self, request):
+       
+        serializer = ProduitSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+       
+        try:
+            produit = Produit.objects.get(pk=pk)
+            produit.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Produit.DoesNotExist:
+            return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+    def put(self, request, pk):
+        try:
+            produit = Produit.objects.get(pk=pk)
+            serializer = ProduitSerializer(produit, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Produit.DoesNotExist:
+            return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
 
 # --- Commande ---
 class CommandeListCreateView(generics.ListCreateAPIView):
@@ -100,3 +154,18 @@ class CommandeProduitListCreateView(generics.ListCreateAPIView):
 class CommandeProduitRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CommandeProduit.objects.all()
     serializer_class = CommandeProduitSerializer
+
+#---------- profile -----
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .serializers import RegisterSerializer  # À adapter selon ton UserSerializer
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = RegisterSerializer(user)
+        return Response(serializer.data, status=200)
+    
